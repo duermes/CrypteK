@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { keccak256, toHex, formatUnits } from "viem";
 import { useWriteContract, useAccount, useSwitchChain, useReadContract } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { uploadToFilecoinDirect, downloadFromFilecoinDirect, getFilecoinInfo, prepareForStorage } from "./filecoin-alternative";
 import { PROFILE_ABI, PROFILE_REGISTRY } from "./profile";
 import { verifyEnsOwner } from "./ens";
@@ -36,8 +37,8 @@ export default function Home() {
   const [isUploading, setIsUploading] = useState(false);
   const [storageInfo, setStorageInfo] = useState<any>(null);
   const [isPreparingStorage, setIsPreparingStorage] = useState(false);
-  
-  // ENS Profile states
+ 
+ 
   const [ens, setEns] = useState("");
   const [isVerifyingEns, setIsVerifyingEns] = useState(false);
   const { data: ensOnchain } = useReadContract({
@@ -153,8 +154,7 @@ export default function Home() {
         alert("Ese ENS no resuelve a tu dirección en Sepolia. Revisa o usa otro.");
         return;
       }
-
-      // Si verifica, guardamos preferencia en Lisk:
+      
       writeProfile({
         abi: PROFILE_ABI,
         address: PROFILE_REGISTRY,
@@ -191,6 +191,11 @@ export default function Home() {
         </p>
       </div>
 
+      {/* Botón de conexión wallet */}
+      <div className="flex justify-center">
+        <ConnectButton />
+      </div>
+
       {/* Estado de conexión */}
       <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="font-semibold mb-2">Estado de conexión:</h3>
@@ -222,7 +227,7 @@ export default function Home() {
         <h2 className="text-lg font-semibold mb-3">🟣 Almacenamiento en Filecoin</h2>
         <div className="space-y-3">
           <div>
-            <label className="block text-sm font-medium mb-1">Archivo (se almacenará en Filecoin)</label>
+            <label className="block text-sm font-medium mb-1">Archivo</label>
             <input 
               type="file" 
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
@@ -270,7 +275,7 @@ export default function Home() {
 
       {/* Sección de mensaje - Lisk */}
       <div className="border rounded-lg p-4">
-        <h2 className="text-lg font-semibold mb-3">🟢 Mensaje en Lisk (Rápido & Barato)</h2>
+        <h2 className="text-lg font-semibold mb-3">🟢 Mensaje en Lisk</h2>
         <div className="space-y-3">
           <div>
             <label className="block text-sm font-medium mb-1">Chat ID</label>
@@ -320,7 +325,7 @@ export default function Home() {
           ENS onchain actual: <b>{(ensOnchain as string) || "(no set)"}</b>
         </p>
         <p className="text-xs text-slate-500">
-          ⚠️ Solo se aceptan ENS que resuelvan a tu dirección en Sepolia
+          ⚠️ Solo se aceptan ENS en Sepolia
         </p>
         <div className="flex gap-3">
           <input 
