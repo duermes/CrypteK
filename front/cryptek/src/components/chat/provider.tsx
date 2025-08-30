@@ -38,6 +38,7 @@ const liskSepolia = defineChain({
       http: [process.env.NEXT_PUBLIC_LISK_RPC_URL as string],
     },
   },
+  testnet: true,
 });
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;

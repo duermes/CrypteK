@@ -1,3 +1,5 @@
+"use client";
+
 import {
   MessageSquare,
   Shield,
@@ -16,8 +18,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
+import {ConnectButton} from "@rainbow-me/rainbowkit";
+import {useAccount} from "wagmi";
+import {ChatInterface} from "@/components/chat/chat-interface";
 
 export default function Home() {
+  const {address, isConnected} = useAccount();
+  if (isConnected && address) {
+    return <ChatInterface />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -49,9 +59,8 @@ export default function Home() {
               Descargar
             </a>
           </nav>
-          <Button className="bg-primary hover:bg-primary/90">
-            Conectar ENS
-          </Button>
+
+          <ConnectButton />
         </div>
       </header>
 

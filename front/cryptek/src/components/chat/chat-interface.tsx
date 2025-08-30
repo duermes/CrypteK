@@ -1,6 +1,7 @@
 "use client";
 
 import {useState} from "react";
+import {useAccount, useDisconnect} from "wagmi";
 import {
   Send,
   Paperclip,
@@ -9,6 +10,8 @@ import {
   Shield,
   Phone,
   Video,
+  LogOut,
+  MessageSquare,
 } from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -56,6 +59,8 @@ const mockMessages: Message[] = [
 export function ChatInterface() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>(mockMessages);
+  const {address, isConnected} = useAccount();
+  const {disconnect} = useDisconnect();
 
   const sendMessage = () => {
     if (!message.trim()) return;
@@ -77,140 +82,242 @@ export function ChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Chat Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-card/50">
-        <div className="flex items-center space-x-3">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src="/abstract-profile.png" />
-            <AvatarFallback className="bg-primary/10 text-primary">
-              AE
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h3 className="font-semibold">alice.eth</h3>
-            <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 bg-secondary rounded-full"></div>
-              <span className="text-xs text-muted-foreground">En línea</span>
-              <Shield className="w-3 h-3 text-primary ml-1" />
+    <div className="flex h-screen bg-background">
+      {/* Sidebar */}
+      <div className="w-80 border-r border-border bg-card/30 flex flex-col">
+        {/* Sidebar Header */}
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <MessageSquare className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <span className="text-xl font-bold">CrypteK</span>
             </div>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm">
-            <Phone className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <Video className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm">
-            <MoreVertical className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Encryption Notice */}
-      <div className="p-3 bg-primary/5 border-b border-border">
-        <div className="flex items-center justify-center space-x-2 text-sm">
-          <Shield className="w-4 h-4 text-primary" />
-          <span className="text-primary">
-            Mensajes cifrados de extremo a extremo con Zama
-          </span>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
-          >
-            <div
-              className={`max-w-xs lg:max-w-md ${
-                msg.isOwn ? "order-2" : "order-1"
-              }`}
-            >
-              {!msg.isOwn && (
-                <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-xs font-medium text-primary">
-                    {msg.sender}
-                  </span>
-                  {msg.isEncrypted && (
-                    <Shield className="w-3 h-3 text-primary" />
-                  )}
-                </div>
-              )}
-              <Card
-                className={`p-3 ${
-                  msg.isOwn
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card border-border"
-                }`}
-              >
-                <p className="text-sm">{msg.content}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <span
-                    className={`text-xs ${
-                      msg.isOwn
-                        ? "text-primary-foreground/70"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {msg.timestamp}
-                  </span>
-                  {msg.isEncrypted && (
-                    <Shield
-                      className={`w-3 h-3 ${
-                        msg.isOwn
-                          ? "text-primary-foreground/70"
-                          : "text-primary"
-                      }`}
-                    />
-                  )}
-                </div>
-              </Card>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Message Input */}
-      <div className="p-4 border-t border-border bg-card/50">
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm">
-            <Paperclip className="w-4 h-4" />
-          </Button>
-          <div className="flex-1 relative">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Escribe un mensaje cifrado..."
-              className="pr-10"
-              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 top-1/2 -translate-y-1/2"
-            >
-              <Smile className="w-4 h-4" />
+            <Button variant="ghost" size="sm" onClick={() => disconnect()}>
+              <LogOut className="w-4 h-4" />
             </Button>
           </div>
-          <Button
-            onClick={sendMessage}
-            className="bg-primary hover:bg-primary/90"
-            disabled={!message.trim()}
-          >
-            <Send className="w-4 h-4" />
-          </Button>
+
+          <div className="flex items-center space-x-3 p-3 bg-primary/5 rounded-lg">
+            <Avatar className="w-10 h-10">
+              <AvatarFallback className="bg-primary/10 text-primary">
+                {address?.slice(2, 4).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {address?.slice(0, 6)}...{address?.slice(-4)}
+              </p>
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                <span className="text-xs text-muted-foreground">Conectado</span>
+                <Shield className="w-3 h-3 text-primary" />
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center justify-center mt-2">
-          <Badge variant="outline" className="text-xs">
-            <Shield className="w-3 h-3 mr-1" />
-            Cifrado con Zama • Almacenado en Filecoin
-          </Badge>
+
+        {/* Chat List */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-2">
+            <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 cursor-pointer">
+              <div className="flex items-center space-x-3">
+                <Avatar className="w-10 h-10">
+                  <AvatarImage src="/abstract-profile.png" />
+                  <AvatarFallback className="bg-secondary/10 text-secondary">
+                    AE
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">alice.eth</p>
+                    <span className="text-xs text-muted-foreground">10:35</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">
+                    Excelente, me encanta trabajar en Web3...
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg hover:bg-card/50 cursor-pointer">
+              <div className="flex items-center space-x-3">
+                <Avatar className="w-10 h-10">
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    BV
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">bob.eth</p>
+                    <span className="text-xs text-muted-foreground">Ayer</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">
+                    ¿Viste el nuevo update de Zama?
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg hover:bg-card/50 cursor-pointer">
+              <div className="flex items-center space-x-3">
+                <Avatar className="w-10 h-10">
+                  <AvatarFallback className="bg-secondary/10 text-secondary">
+                    GD
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">Grupo LATAM</p>
+                    <span className="text-xs text-muted-foreground">2d</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">
+                    Carlos: Votemos por el próximo meetup
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Chat Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border bg-card/50">
+          <div className="flex items-center space-x-3">
+            <Avatar className="w-10 h-10">
+              <AvatarImage src="/abstract-profile.png" />
+              <AvatarFallback className="bg-primary/10 text-primary">
+                AE
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="font-semibold">alice.eth</h3>
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                <span className="text-xs text-muted-foreground">En línea</span>
+                <Shield className="w-3 h-3 text-primary ml-1" />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="sm">
+              <Phone className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <Video className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <MoreVertical className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Encryption Notice */}
+        <div className="p-3 bg-primary/5 border-b border-border">
+          <div className="flex items-center justify-center space-x-2 text-sm">
+            <Shield className="w-4 h-4 text-primary" />
+            <span className="text-primary">
+              Mensajes cifrados de extremo a extremo con Zama
+            </span>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`max-w-xs lg:max-w-md ${
+                  msg.isOwn ? "order-2" : "order-1"
+                }`}
+              >
+                {!msg.isOwn && (
+                  <div className="flex items-center space-x-2 mb-1">
+                    <span className="text-xs font-medium text-primary">
+                      {msg.sender}
+                    </span>
+                    {msg.isEncrypted && (
+                      <Shield className="w-3 h-3 text-primary" />
+                    )}
+                  </div>
+                )}
+                <Card
+                  className={`p-3 ${
+                    msg.isOwn
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card border-border"
+                  }`}
+                >
+                  <p className="text-sm">{msg.content}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <span
+                      className={`text-xs ${
+                        msg.isOwn
+                          ? "text-primary-foreground/70"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {msg.timestamp}
+                    </span>
+                    {msg.isEncrypted && (
+                      <Shield
+                        className={`w-3 h-3 ${
+                          msg.isOwn
+                            ? "text-primary-foreground/70"
+                            : "text-primary"
+                        }`}
+                      />
+                    )}
+                  </div>
+                </Card>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Message Input */}
+        <div className="p-4 border-t border-border bg-card/50">
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="sm">
+              <Paperclip className="w-4 h-4" />
+            </Button>
+            <div className="flex-1 relative">
+              <Input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Escribe un mensaje cifrado..."
+                className="pr-10"
+                onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2"
+              >
+                <Smile className="w-4 h-4" />
+              </Button>
+            </div>
+            <Button
+              onClick={sendMessage}
+              className="bg-primary hover:bg-primary/90"
+              disabled={!message.trim()}
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="flex items-center justify-center mt-2">
+            <Badge variant="outline" className="text-xs">
+              <Shield className="w-3 h-3 mr-1" />
+              Cifrado con Zama • Almacenado en Filecoin
+            </Badge>
+          </div>
         </div>
       </div>
     </div>
