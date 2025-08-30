@@ -18,6 +18,8 @@ import {Input} from "@/components/ui/input";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {Badge} from "@/components/ui/badge";
 import {Card} from "@/components/ui/card";
+import {ConnectButton} from "@rainbow-me/rainbowkit";
+import {ChatBox} from "./chat-box";
 
 interface Message {
   id: string;
@@ -86,6 +88,9 @@ export function ChatInterface() {
       {/* Sidebar */}
       <div className="w-80 border-r border-border bg-card/30 flex flex-col">
         {/* Sidebar Header */}
+        <div className="">
+          <ConnectButton />
+        </div>
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
@@ -121,63 +126,21 @@ export function ChatInterface() {
         {/* Chat List */}
         <div className="flex-1 overflow-y-auto p-4">
           <div className="space-y-2">
-            <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 cursor-pointer">
-              <div className="flex items-center space-x-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src="/abstract-profile.png" />
-                  <AvatarFallback className="bg-secondary/10 text-secondary">
-                    AE
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">alice.eth</p>
-                    <span className="text-xs text-muted-foreground">10:35</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground truncate">
-                    Excelente, me encanta trabajar en Web3...
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-lg hover:bg-card/50 cursor-pointer">
-              <div className="flex items-center space-x-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarFallback className="bg-primary/10 text-primary">
-                    BV
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">bob.eth</p>
-                    <span className="text-xs text-muted-foreground">Ayer</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground truncate">
-                    ¿Viste el nuevo update de Zama?
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-lg hover:bg-card/50 cursor-pointer">
-              <div className="flex items-center space-x-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarFallback className="bg-secondary/10 text-secondary">
-                    GD
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">Grupo LATAM</p>
-                    <span className="text-xs text-muted-foreground">2d</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground truncate">
-                    Carlos: Votemos por el próximo meetup
-                  </p>
-                </div>
-              </div>
-            </div>
+            <ChatBox
+              name="alice.eth"
+              time="10:35"
+              messagePreview="¡Hola! ¿Cómo estás? 👋"
+            />
+            <ChatBox
+              name="ricardo.eth"
+              time="14:14"
+              messagePreview="que tal.. 👋"
+            />
+            <ChatBox
+              name="garye.eth"
+              time="11:35"
+              messagePreview="¡Hola! ¿Cómo estás? 👋¡Hola! ¿Cómo estás? 👋v"
+            />
           </div>
         </div>
       </div>
