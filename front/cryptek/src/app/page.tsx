@@ -1,8 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import { keccak256, toHex, formatUnits } from "viem";
-import { useWriteContract, useAccount, useSwitchChain } from "wagmi";
+import { useWriteContract, useAccount, useSwitchChain, useReadContract } from "wagmi";
 import { uploadToFilecoinDirect, downloadFromFilecoinDirect, getFilecoinInfo, prepareForStorage } from "./filecoin-alternative";
+import { PROFILE_ABI, PROFILE_REGISTRY } from "./profile";
+import { verifyEnsOwner } from "./ens";
 
 const MESSAGE_COMMIT_ADDRESS = process.env.NEXT_PUBLIC_MESSAGE_COMMIT as `0x${string}`;
 const MESSAGE_COMMIT_ABI = [
@@ -34,6 +36,17 @@ export default function Home() {
   const [isUploading, setIsUploading] = useState(false);
   const [storageInfo, setStorageInfo] = useState<any>(null);
   const [isPreparingStorage, setIsPreparingStorage] = useState(false);
+  
+  // ENS Profile states
+  const [ens, setEns] = useState("");
+  const [isVerifyingEns, setIsVerifyingEns] = useState(false);
+  const { data: ensOnchain } = useReadContract({
+    abi: PROFILE_ABI,
+    address: PROFILE_REGISTRY,
+    functionName: "ensName",
+    args: [address ?? "0x0000000000000000000000000000000000000000"],
+  });
+  const { writeContract: writeProfile } = useWriteContract();
   
   useEffect(() => {
     if (isConnected && chain?.id === FILECOIN_CALIBRATION_ID) {
@@ -118,6 +131,41 @@ export default function Home() {
       console.log("Mensaje posteado en Lisk, media almacenada en Filecoin");
     } catch (error) {
       console.error("Error al postear mensaje:", error);
+    }
+  };
+
+  const saveEns = async () => {
+    if (!address) {
+      alert("Conecta tu wallet primero.");
+      return;
+    }
+    
+    if (!ens.endsWith(".eth")) {
+      alert("Ingresa un ENS válido (termina en .eth).");
+      return;
+    }
+
+    setIsVerifyingEns(true);
+    
+    try {
+      const ok = await verifyEnsOwner(ens, address as `0x${string}`);
+      if (!ok) {
+        alert("Ese ENS no resuelve a tu dirección en Sepolia. Revisa o usa otro.");
+        return;
+      }
+
+      // Si verifica, guardamos preferencia en Lisk:
+      writeProfile({
+        abi: PROFILE_ABI,
+        address: PROFILE_REGISTRY,
+        functionName: "setENS",
+        args: [ens],
+      });
+    } catch (error) {
+      console.error("Error verificando ENS:", error);
+      alert("Error al verificar ENS. Inténtalo de nuevo.");
+    } finally {
+      setIsVerifyingEns(false);
     }
   };
 
@@ -264,6 +312,33 @@ export default function Home() {
           <li>3. 🔗 El CID de Filecoin se referencia en el contrato de Lisk</li>
         </ol>
       </div>
+
+      {/* Perfil / ENS */}
+      <section className="mt-10 border-t pt-6 space-y-3">
+        <h2 className="font-semibold">Perfil / ENS</h2>
+        <p className="text-sm text-slate-600">
+          ENS onchain actual: <b>{(ensOnchain as string) || "(no set)"}</b>
+        </p>
+        <p className="text-xs text-slate-500">
+          ⚠️ Solo se aceptan ENS que resuelvan a tu dirección en Sepolia
+        </p>
+        <div className="flex gap-3">
+          <input 
+            className="border rounded px-3 py-2 flex-1" 
+            placeholder="tu-handle.eth" 
+            value={ens} 
+            onChange={(e)=>setEns(e.target.value)}
+            disabled={isVerifyingEns}
+          />
+          <button 
+            onClick={saveEns} 
+            disabled={isVerifyingEns || !ens.trim() || !address}
+            className="rounded bg-blue-700 text-white px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-800 transition-colors"
+          >
+            {isVerifyingEns ? "Verificando..." : "Guardar"}
+          </button>
+        </div>
+      </section>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
