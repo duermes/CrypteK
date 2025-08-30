@@ -12,9 +12,9 @@ import {
   downloadFromFilecoinDirect,
   getFilecoinInfo,
   prepareForStorage,
-} from "./filecoin-alternative";
-import {PROFILE_ABI, PROFILE_REGISTRY} from "./profile";
-import {verifyEnsOwner} from "./ens";
+} from "@/lib/filecoin-alternative";
+import {PROFILE_ABI, PROFILE_REGISTRY} from "@/lib/profile";
+import {verifyEnsOwner} from "@/lib/ens";
 
 const MESSAGE_COMMIT_ADDRESS = process.env
   .NEXT_PUBLIC_MESSAGE_COMMIT as `0x${string}`;
