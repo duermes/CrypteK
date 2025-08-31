@@ -1,3 +1,5 @@
+//provider.tsx
+
 "use client";
 import * as React from "react";
 import {RainbowKitProvider, connectorsForWallets} from "@rainbow-me/rainbowkit";

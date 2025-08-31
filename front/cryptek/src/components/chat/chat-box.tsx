@@ -1,3 +1,5 @@
+//chat-box.tsx
+
 import {AvatarFallback, AvatarImage} from "@radix-ui/react-avatar";
 import {Avatar} from "../ui/avatar";
 
