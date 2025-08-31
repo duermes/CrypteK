@@ -98,11 +98,6 @@ const processedMessage = await contract.process(encryptedMessage);
 // Result is still encrypted - only recipients can decrypt!
 ```
 
-#### **Multi-Chain Architecture**
-- **Ethereum Sepolia**: Primary encryption layer
-- **Lisk Sepolia**: High-performance chat management
-- **Filecoin Calibration**: Decentralized file storage
-
 #### **Zero-Knowledge Tipping**
 ```solidity
 // Tip amounts stay private even on-chain
@@ -167,18 +162,18 @@ pnpm dev
 ## 🎯 Hackathon Judges: Why CrypteK Deserves to Win
 
 ### 🏆 **Innovation Category**
-- **Groundbreaking Technology**: First FHE messaging platform
+- **Groundbreaking Technology**: First homomorphic encryption in messaging
 - **Technical Complexity**: Multi-chain, encryption, real-time sync
 - **Market Disruption**: Solves real privacy crisis
 
 ### 🏆 **Technical Excellence**
 - **Performance**: <100ms encryption, real-time messaging
-- **Security**: Military-grade FHE implementation
+- **Security**: Military-grade encryption implementation
 - **Scalability**: Multi-chain architecture for global scale
 
 ### 🏆 **Business Potential**
 - **Massive Market**: $50B+ messaging market opportunity
-- **Defensible Moat**: FHE technology barrier to entry
+- **Defensible Moat**: Advanced encryption barrier to entry
 - **Revenue Model**: Integrated tipping economy
 
 ### 🏆 **User Experience**
@@ -223,11 +218,17 @@ pnpm dev
 
 ## 📈 Traction & Milestones
 
-- ✅ **Hackathon Winner**: ETHGlobal, Devcon, etc.
-- ✅ **Technical Validation**: FHE implementation proven
-- ✅ **User Testing**: 1000+ beta users
-- ✅ **Security Audit**: Third-party cryptography review
-- ✅ **Partnerships**: Zama, Filecoin, Lisk ecosystem
+### **Current Achievements**
+- ✅ **Core messaging** with encryption
+- ✅ **Multi-chain integration** across blockchains
+- ✅ **Confidential tipping** system
+- ✅ **Decentralized storage** implementation
+
+### **Target Milestones (Q4 2025)**
+- 🎯 **Hackathon Success**: Win ETHGlobal or similar
+- 🎯 **Technical Validation**: Complete encryption audit
+- 🎯 **Beta Testing**: 100+ user testing phase
+- 🎯 **Partnerships**: Web3 ecosystem integration
 
 ## 🤝 Join the Privacy Revolution
 
@@ -351,12 +352,10 @@ import { RainbowKitProvider } from '@rainbowkit/rainbowkit'
 
 ### 🔐 **Advanced Security Features**
 
-#### **Client-Side FHE Encryption**
-```typescript
-// Messages encrypted before transmission
-const encryptedMessage = await fhe.encrypt(message);
-await contract.postEncryptedMessage(encryptedMessage);
-```
+#### **Client-Side Encryption**
+- Messages encrypted before transmission
+- Advanced cryptographic operations
+- Secure blockchain integration
 
 #### **Zero-Knowledge Operations**
 - Messages processed without decryption
@@ -502,76 +501,6 @@ pnpm start
 - React DevTools integration
 - Web3 debugging tools
 - Network inspection for blockchain calls
-
----
-
-## 📋 Technical Documentation (For Developers)
-
-### Installation & Setup
-```bash
-# Full development environment
-git clone https://github.com/duermes/CrypteK.git
-cd CrypteK
-
-# Install all dependencies
-pnpm install
-cd packages/contracts && forge install
-
-# Configure environment
-cp front/cryptek/.env.local.example front/cryptek/.env.local
-cp packages/contracts/.env.example packages/contracts/.env
-
-# Launch everything
-cd front/cryptek && pnpm dev
-```
-
-### Architecture Overview
-- **Frontend**: Next.js 15, TypeScript, Tailwind CSS
-- **Smart Contracts**: Solidity, Foundry, Multi-chain deployment
-- **Encryption**: Zama FHE SDK, Client-side encryption
-- **Storage**: IPFS, Filecoin, Decentralized file storage
-- **Real-time**: WebSocket integration for live messaging
-
-### Key Features
-- ✅ Fully Homomorphic Encryption (FHE)
-- ✅ Multi-chain support (Ethereum, Lisk, Filecoin)
-- ✅ Confidential tipping system
-- ✅ Decentralized file storage
-- ✅ Real-time encrypted messaging
-- ✅ Wallet integration (MetaMask, RainbowKit)
-
-### API Reference
-```typescript
-// Send encrypted message
-await CryptekContracts.postEncryptedMessage(content, userAddress)
-
-// Create private chat group
-await ChatRegistry.createGroup(requiresDeposit)
-
-// Send confidential tip
-await CryptekContracts.sendPrivateTip(amount, userAddress)
-```
-
-### Testing
-```bash
-# Run all tests
-cd packages/contracts && forge test
-cd front/cryptek && pnpm test
-
-# Performance benchmarks
-pnpm bench
-```
-
-### Deployment
-```bash
-# Smart contracts
-cd packages/contracts
-./deploy.sh
-
-# Frontend
-cd front/cryptek
-pnpm build && pnpm start
-```
 
 ---
 
