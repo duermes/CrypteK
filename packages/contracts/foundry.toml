@@ -3,4 +3,18 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+# Remappings para encontrar contratos en la raíz del proyecto
+remappings = [
+    "contracts/=../../contracts/"
+]
+
+# Configuración de redes
+[rpc_endpoints]
+sepolia = "https://rpc.sepolia.org"
+lisk_sepolia = "https://rpc.sepolia-api.lisk.com"
+polygon_mumbai = "https://rpc-mumbai.maticvigil.com"
+arbitrum_sepolia = "https://sepolia-rollup.arbitrum.io/rpc"
+
+[etherscan]
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+lisk_sepolia = { key = "${LISK_API_KEY}" }
