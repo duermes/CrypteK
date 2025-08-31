@@ -11,7 +11,6 @@ import {
   CHAT_REGISTRY_ABI,
 } from "./contract";
 
-// ---------- CONFIG DE TUS CONTRATOS ----------
 export const ADDRESSES = {
   encryptedVault: process.env.NEXT_PUBLIC_ENCRYPTED_VAULT as Address,
   privateTipVault: process.env.NEXT_PUBLIC_PRIVATE_TIP as Address,
@@ -21,7 +20,6 @@ export const ADDRESSES = {
   tipRouter: process.env.NEXT_PUBLIC_TIP_ROUTER as Address,
 };
 
-// ---------- SDK FHE ----------
 let fheInstance: any;
 
 export async function initFHE() {
@@ -46,7 +44,6 @@ export async function initFHE() {
 }
 
 export class CryptekContracts {
-  // 🔐 Enviar mensaje cifrado a Zama (EncryptedMessageVault)
   static async postEncryptedMessage(message: string, userAddress: Address) {
     const fhe = await initFHE();
     const encryptedInput = await fhe.createEncryptedInput(message, {
@@ -62,7 +59,6 @@ export class CryptekContracts {
     };
   }
 
-  // 💸 Enviar tip privado (PrivateTipVault - Zama)
   static async sendPrivateTip(amount: number, userAddress: Address) {
     const fhe = await initFHE();
     const encryptedInput = await fhe.createEncryptedInput(amount, {
@@ -78,7 +74,6 @@ export class CryptekContracts {
     };
   }
 
-  // 📚 Registrar chat en Lisk
   static createChat(name: string) {
     return {
       abi: CHAT_REGISTRY_ABI,
@@ -88,7 +83,6 @@ export class CryptekContracts {
     };
   }
 
-  // 📝 Postear metadata de mensaje en Lisk
   static commitMessage(chatId: bigint, text: string, cid: string) {
     const hash: Hash = keccak256(toHex(new TextEncoder().encode(text)));
     return {
@@ -99,7 +93,6 @@ export class CryptekContracts {
     };
   }
 
-  // 👤 Guardar ENS en perfil (ProfileRegistry - Lisk)
   static setENS(name: string) {
     return {
       abi: PROFILE_REGISTRY_ABI,
@@ -109,7 +102,7 @@ export class CryptekContracts {
     };
   }
 
-  // 💰 Propina pública (TipRouter - Lisk)
+
   static tipPublic(user: Address, amount: bigint) {
     return {
       abi: TIP_ROUTER_ABI,

@@ -1,2 +1,2 @@
-// src/declarations.d.ts
-// declare module "@zama-fhe/relayer-sdk";
+// src / declarations.d.ts;
+declare module "@zama-fhe/relayer-sdk";
