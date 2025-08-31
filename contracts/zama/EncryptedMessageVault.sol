@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-
 import { FHE, euint64, externalEuint64 } from "@fhevm/solidity/lib/FHE.sol";
+import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
 
-
-contract EncryptedMessageVault {
+contract EncryptedMessageVault is SepoliaConfig {
 struct ZMsg {
 address sender;
 uint256 chatId;
@@ -20,9 +19,9 @@ event PublicCiphertext(uint256 indexed id, bytes payload);
 
 
 function postEncrypted(uint256 chatId, externalEuint64 encContentRef) external returns (uint256 id) {
-euint64 sealed = FHE.fromExternal(encContentRef, ""); // if your toolchain requires attestation, pass it
+euint64 encryptedContent = FHE.fromExternal(encContentRef, ""); // if your toolchain requires attestation, pass it
 id = zmessages.length;
-zmessages.push(ZMsg({ sender: msg.sender, chatId: chatId, ts: block.timestamp, contentRef: sealed }));
+zmessages.push(ZMsg({ sender: msg.sender, chatId: chatId, ts: block.timestamp, contentRef: encryptedContent }));
 emit EncryptedMessagePosted(id, chatId, msg.sender);
 }
 
@@ -37,10 +36,10 @@ FHE.allow(zmessages[id].contentRef, reader);
 function makePublic(uint256 id) external {
 require(id < zmessages.length, "bad id");
 require(zmessages[id].sender == msg.sender, "only sender");
-bytes memory payload = FHE.makePubliclyDecryptable(zmessages[id].contentRef);
-// Emit payload for frontend to call publicDecrypt(...) (or for oracles)
-emit PublicCiphertext(id, payload);
+FHE.makePubliclyDecryptable(zmessages[id].contentRef);
+// Emit event for frontend to call publicDecrypt(...) (or for oracles)
 // Note: we emit a specific event for public ciphertexts; frontend will listen for this event.
+emit PublicCiphertext(id, bytes(""));
 }
 
 

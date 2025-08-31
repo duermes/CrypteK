@@ -5,16 +5,17 @@ libs = ["lib"]
 
 # Remappings para encontrar contratos en la raíz del proyecto
 remappings = [
-    "contracts/=../../contracts/"
+    "contracts/=../../contracts/",
+    "@fhevm/solidity/=lib/fhevm/library-solidity/"
 ]
 
 # Configuración de redes
 [rpc_endpoints]
 sepolia = "https://rpc.sepolia.org"
 lisk_sepolia = "https://rpc.sepolia-api.lisk.com"
-polygon_mumbai = "https://rpc-mumbai.maticvigil.com"
-arbitrum_sepolia = "https://sepolia-rollup.arbitrum.io/rpc"
+zama_sepolia = "https://rpc.sepolia.org"
 
 [etherscan]
 sepolia = { key = "${ETHERSCAN_API_KEY}" }
 lisk_sepolia = { key = "${LISK_API_KEY}" }
+zama_sepolia = { key = "${ETHERSCAN_API_KEY}" }

@@ -9,16 +9,16 @@ import {ChatRegistry} from "contracts/lisk/ChatRegistry.sol";
 import {MessageCommit} from "contracts/lisk/MessageCommit.sol";
 import {TipRouter as LiskTipRouter} from "contracts/lisk/TipRouter.sol";
 
-// Contratos Zama - COMENTADOS hasta tener FHEVM
-// import {EncryptedMessageVault} from "../../../contracts/zama/EncryptedMessageVault.sol";
-// import {PrivateTipVault} from "../../../contracts/zama/PrivateTipVault.sol";
+// Contratos Zama - AHORA DESCOMENTADOS
+import {EncryptedMessageVault} from "contracts/zama/EncryptedMessageVault.sol";
+import {PrivateTipVault} from "contracts/zama/PrivateTipVault.sol";
 
 contract Deploy is Script {
     function run() external {
         vm.startBroadcast();
 
-        console.log("Deploying CrypteK Contracts to Lisk Sepolia");
-        console.log("===========================================");
+        console.log("Deploying CrypteK Contracts to Zama Sepolia Testnet");
+        console.log("==================================================");
 
         // Deploy contratos Lisk (4 contratos principales)
         console.log("Deploying Lisk Contracts...");
@@ -35,20 +35,27 @@ contract Deploy is Script {
         LiskTipRouter ltr = new LiskTipRouter();
         console.log("TipRouter deployed at:", address(ltr));
 
+        // Deploy contratos Zama (2 contratos FHE)
+        console.log("Deploying Zama FHE Contracts...");
+
+        EncryptedMessageVault emv = new EncryptedMessageVault();
+        console.log("EncryptedMessageVault deployed at:", address(emv));
+
+        PrivateTipVault ptv = new PrivateTipVault();
+        console.log("PrivateTipVault deployed at:", address(ptv));
+
         vm.stopBroadcast();
 
         console.log("");
         console.log("DEPLOYMENT COMPLETE!");
         console.log("====================");
-        console.log("4/6 contracts deployed successfully");
+        console.log("6/6 contracts deployed successfully");
         console.log("Save these addresses for your frontend:");
         console.log("- ProfileRegistry:", address(pr));
         console.log("- ChatRegistry:", address(cr));
         console.log("- MessageCommit:", address(mc));
         console.log("- TipRouter:", address(ltr));
-
-        console.log("");
-        console.log("Note: Zama FHE contracts require FHEVM setup");
-        console.log("They can be deployed separately when FHEVM is configured");
+        console.log("- EncryptedMessageVault:", address(emv));
+        console.log("- PrivateTipVault:", address(ptv));
     }
 }

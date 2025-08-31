@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-
 import { FHE, euint64, externalEuint64 } from "@fhevm/solidity/lib/FHE.sol";
+import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
 
-
-contract PrivateTipVault {
+contract PrivateTipVault is SepoliaConfig {
 struct TipRef {
 address from;
 address to;
@@ -18,6 +17,7 @@ euint64 amountEnc;
 
 TipRef[] private tips;
 mapping(uint256 => euint64) private sumByMessage;
+mapping(uint256 => bool) private messageInitialized;
 
 
 event TipRecorded(uint256 indexed tipId, uint256 indexed messageId, address indexed from, address to, address token);
@@ -29,13 +29,12 @@ euint64 a = FHE.fromExternal(encAmount, "");
 tipId = tips.length;
 tips.push(TipRef({ from: msg.sender, to: to, token: token, messageId: messageId, ts: block.timestamp, amountEnc: a }));
 
-
-// initialize if zero
-if (sumByMessage[messageId].encrypted == bytes32(0)) {
-sumByMessage[messageId] = FHE.asEuint64(0);
+// Initialize sum if this is the first tip for this message
+if (!messageInitialized[messageId]) {
+    sumByMessage[messageId] = FHE.asEuint64(0);
+    messageInitialized[messageId] = true;
 }
 sumByMessage[messageId] = FHE.add(sumByMessage[messageId], a);
-
 
 emit TipRecorded(tipId, messageId, msg.sender, to, token);
 }
@@ -50,8 +49,8 @@ FHE.allow(t.amountEnc, reader);
 
 
 function publishTotal(uint256 messageId) external {
-bytes memory payload = FHE.makePubliclyDecryptable(sumByMessage[messageId]);
-emit PublicTotal(messageId, payload);
+FHE.makePubliclyDecryptable(sumByMessage[messageId]);
+emit PublicTotal(messageId, bytes(""));
 }
 
 
