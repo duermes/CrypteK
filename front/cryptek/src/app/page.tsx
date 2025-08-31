@@ -20,7 +20,7 @@ import {
 import {Badge} from "@/components/ui/badge";
 import {ConnectButton} from "@rainbow-me/rainbowkit";
 import {useAccount} from "wagmi";
-import {ChatInterface} from "@/components/chat/chat-interface";
+import {ChatInterface} from "@/components/test/interface";
 
 export default function Home() {
   const {address, isConnected} = useAccount();
