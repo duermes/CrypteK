@@ -61,6 +61,10 @@ class WebSocketManager {
       this.ws.onerror = (error) => {
         console.error("[v0] WebSocket error:", error);
         this.emit("error", {error});
+        // Don't attempt to reconnect if it's a connection failure
+        if (this.ws?.readyState === WebSocket.CLOSED) {
+          console.log("[v0] WebSocket server not available, operating in offline mode");
+        }
       };
     } catch (error) {
       console.error("[v0] WebSocket connection failed:", error);
@@ -70,10 +74,12 @@ class WebSocketManager {
   private attemptReconnect(userAddress: Address) {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
+      console.log(`[v0] WebSocket reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
       setTimeout(() => {
-        console.log(`[v0] Reconnecting... Attempt ${this.reconnectAttempts}`);
         this.connect(userAddress);
       }, this.reconnectDelay * this.reconnectAttempts);
+    } else {
+      console.log("[v0] Max reconnection attempts reached, operating in offline mode");
     }
   }
 

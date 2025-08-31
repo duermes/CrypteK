@@ -104,6 +104,27 @@ export function ChatInterface() {
     userAddress,
   } = useChat();
 
+  // Use wallet connection status instead of WebSocket for basic functionality
+  const canSendMessages = isConnected && address;
+
+  // Debug function to reset chat state
+  const resetChatState = () => {
+    setSelectedChat(null);
+    console.log("[DEBUG] Chat state reset");
+  };
+
+  // Debug function to log current state
+  const logCurrentState = () => {
+    console.log("[DEBUG] Current state:", {
+      selectedChat,
+      chats,
+      chatsCount: chats.length,
+      hasWallet: !!address,
+      isWalletConnected: isConnected,
+      canSendMessages
+    });
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -113,7 +134,7 @@ export function ChatInterface() {
 
   const sendMessage = async () => {
     if (!message.trim() && !file) return;
-    if (!isConnected || !address) {
+    if (!canSendMessages) {
       toast.error("Por favor, conecta tu wallet.");
       return;
     }
@@ -173,6 +194,22 @@ export function ChatInterface() {
 
   const selectedChatData = chats.find((chat) => chat.id === selectedChat);
 
+  // Debug: if selectedChat exists but selectedChatData is null, log the issue
+  if (selectedChat && !selectedChatData) {
+    console.error("[v0] selectedChat exists but no matching chat found:", selectedChat);
+    console.log("[v0] Available chats:", chats.map(c => ({ id: c.id, name: c.name })));
+  }
+
+  // Debug logs
+  console.log("[v0] selectedChat:", selectedChat);
+  console.log("[v0] chats:", chats);
+  console.log("[v0] chats length:", chats.length);
+  chats.forEach((chat, index) => {
+    console.log(`[v0] Chat ${index}:`, { id: chat.id, name: chat.name, hasId: !!chat.id });
+  });
+  console.log("[v0] selectedChatData:", selectedChatData);
+  console.log("[v0] displayMessages:", displayMessages);
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -227,7 +264,24 @@ export function ChatInterface() {
             {chats.map((chat) => (
               <div
                 key={chat.id}
-                onClick={() => setSelectedChat(chat.id)}
+                onClick={() => {
+                  console.log("[v0] Clicking on chat:", chat);
+                  console.log("[v0] Chat ID:", chat.id);
+                  console.log("[v0] Chat name:", chat.name);
+                  if (chat.id) {
+                    setSelectedChat(chat.id);
+                    console.log("[v0] Selected chat set to:", chat.id);
+                  } else {
+                    console.error("[v0] Chat ID is undefined! Cannot select chat:", chat);
+                    // Try to use index as fallback
+                    const chatIndex = chats.findIndex(c => c === chat);
+                    if (chatIndex !== -1) {
+                      const fallbackId = `fallback_${chatIndex}`;
+                      setSelectedChat(fallbackId);
+                      console.log("[v0] Using fallback ID:", fallbackId);
+                    }
+                  }
+                }}
                 className={`cursor-pointer ${
                   selectedChat === chat.id ? "ring-2 ring-primary" : ""
                 }`}
@@ -248,6 +302,13 @@ export function ChatInterface() {
                 No hay chats aún.
                 <br />
                 Crea uno nuevo para empezar.
+                <br />
+                <button
+                  onClick={() => console.log("[DEBUG] Current state:", { chats, localChats: chats, selectedChat })}
+                  className="mt-2 px-3 py-1 bg-primary/20 rounded text-xs"
+                >
+                  Debug State
+                </button>
               </div>
             )}
           </div>
@@ -256,7 +317,9 @@ export function ChatInterface() {
 
       {/* Chat Area */}
       <div className="flex-1 flex flex-col">
-        {selectedChat && selectedChatData ? (
+        {(() => {
+          console.log("[v0] Render condition check:", { selectedChat, selectedChatData: !!selectedChatData });
+          return selectedChat && selectedChatData ? (
           <>
             {/* Chat Header */}
             <div className="flex items-center justify-between p-4 border-b border-border bg-card/50">
@@ -492,7 +555,7 @@ export function ChatInterface() {
               />
             </div>
           </div>
-        )}
+        )})()}
       </div>
     </div>
   );
