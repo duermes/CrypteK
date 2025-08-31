@@ -19,8 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@zama-fhe/relayer-sdk": ["types/zama-fhe-relayer-sdk"]
+      "@/*": ["./src/*"]
+      // "@zama-fhe/relayer-sdk": ["types/zama-fhe-relayer-sdk"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

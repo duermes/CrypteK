@@ -12,7 +12,7 @@ import {
   downloadFromFilecoinDirect,
   getFilecoinInfo,
   prepareForStorage,
-} from "@/lib/filecoin-alternative";
+} from "@/lib/filecoin";
 import {PROFILE_ABI, PROFILE_REGISTRY} from "@/lib/profile";
 import {verifyEnsOwner} from "@/lib/ens";
 
