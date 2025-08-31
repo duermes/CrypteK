@@ -1,0 +1,3 @@
+[submodule "packages/contracts/lib/fhevm"]
+	path = packages/contracts/lib/fhevm
+	url = https://github.com/zama-ai/fhevm
