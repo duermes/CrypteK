@@ -1,7 +1,7 @@
-import {createInstance, SepoliaConfig} from "@zama-fhe/relayer-sdk";
+"use client";
 
-import {Address, Hash, keccak256, toHex} from "viem";
-import {useAccount, useWriteContract, useReadContract} from "wagmi";
+import { Address, Hash, keccak256, toHex } from "viem";
+import { useAccount, useWriteContract, useReadContract } from "wagmi";
 import {
   ENCRYPTED_MESSAGE_VAULT_ABI,
   PRIVATE_TIP_VAULT_ABI,
@@ -23,9 +23,24 @@ export const ADDRESSES = {
 
 // ---------- SDK FHE ----------
 let fheInstance: any;
+
 export async function initFHE() {
   if (!fheInstance) {
-    fheInstance = await createInstance(SepoliaConfig);
+    try {
+      // Dynamically import the ESM module from CDN
+      const { initSDK, createInstance, SepoliaConfig } = await import(
+        "https://cdn.zama.ai/relayer-sdk-js/0.1.0-9/relayer-sdk-js.js"
+      );
+      await initSDK(); // Initialize WASM
+      if (typeof window === "undefined" || !window.ethereum) {
+        throw new Error("Web3 provider not available");
+      }
+      const config = { ...SepoliaConfig, network: window.ethereum };
+      fheInstance = await createInstance(config);
+    } catch (error) {
+      console.error("FHE initialization failed:", error);
+      throw error;
+    }
   }
   return fheInstance;
 }
