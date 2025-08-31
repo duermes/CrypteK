@@ -4,6 +4,7 @@ import type React from "react";
 
 import {useState} from "react";
 import {type Address, isAddress} from "viem";
+import {useAccount} from "wagmi";
 import {
   Dialog,
   DialogContent,
@@ -27,8 +28,15 @@ export function NewChatDialog({onCreateChat, isCreating}: NewChatDialogProps) {
   const [walletAddress, setWalletAddress] = useState("");
   const [chatName, setChatName] = useState("");
 
+  const {address, isConnected} = useAccount();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isConnected || !address) {
+      toast.error("Por favor, conecta tu wallet primero");
+      return;
+    }
 
     if (!walletAddress.trim()) {
       toast.error("Ingresa una dirección de wallet");

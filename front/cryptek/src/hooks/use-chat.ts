@@ -13,13 +13,17 @@ export function useChat() {
   const {
     isConnected: wsConnected,
     messages,
-    chats,
+    chats: wsChats,
     sendMessage: wsSendMessage,
     createChat: wsCreateChat,
   } = useWebSocket(address);
 
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [localChats, setLocalChats] = useState<any[]>([]);
+
+  // Combine WebSocket chats with local chats
+  const chats = [...wsChats, ...localChats];
 
   const selectedChatMessages = messages.filter(
     (msg) => msg.chatId === selectedChat
@@ -37,25 +41,17 @@ export function useChat() {
             address
           );
 
-          await writeContract({
-            ...contractCall,
-            onSuccess: (hash) => {
-              console.log("[v0] Encrypted message sent:", hash);
-              // Also send via WebSocket for real-time updates
-              wsSendMessage(selectedChat, content, true);
-              toast.success("Mensaje cifrado enviado");
-            },
-            onError: (error) => {
-              console.error("[v0] Error sending encrypted message:", error);
-              toast.error("Error enviando mensaje cifrado");
-            },
-          });
+          const hash = await writeContract(contractCall);
+          console.log("[v0] Encrypted message sent:", hash);
+          // Also send via WebSocket for real-time updates
+          wsSendMessage(selectedChat, content, true);
+          toast.success("Mensaje cifrado enviado");
         } else {
           // Send public message via WebSocket only
           wsSendMessage(selectedChat, content, false);
           toast.success("Mensaje enviado");
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("[v0] Error in sendMessage:", error);
         toast.error("Error enviando mensaje");
       }
@@ -75,27 +71,33 @@ export function useChat() {
           chatName || `Chat with ${participantAddress.slice(0, 8)}...`
         );
 
-        await writeContract({
-          ...contractCall,
-          onSuccess: (hash) => {
-            console.log("[v0] Chat created on CryptekContracts:", hash);
-            // Also create via WebSocket
-            wsCreateChat(participantAddress, chatName);
-            toast.success("Chat creado exitosamente");
-          },
-          onError: (error) => {
-            console.error("[v0] Error creating chat:", error);
-            toast.error("Error creando chat");
-          },
-        });
-      } catch (error) {
-        console.error("[v0] Error in createNewChat:", error);
+        const hash = await writeContract(contractCall);
+        console.log("[v0] Chat created on CryptekContracts:", hash);
+
+        // Create a local chat object for immediate UI update
+        const newChat = {
+          id: hash, // Use transaction hash as chat ID for now
+          name: chatName || `Chat with ${participantAddress.slice(0, 8)}...`,
+          participants: [address, participantAddress],
+          createdAt: Date.now(),
+        };
+
+        // Add to local chats state
+        setLocalChats(prev => [...prev, newChat]);
+
+        // Update local state immediately
+        // Note: In production, this would come from WebSocket
+        console.log("[v0] Chat created locally:", newChat);
+
+        toast.success("Chat creado exitosamente");
+      } catch (error: any) {
+        console.error("[v0] Error creating chat:", error);
         toast.error("Error creando chat");
       } finally {
         setIsCreatingChat(false);
       }
     },
-    [address, writeContract, wsCreateChat]
+    [address, writeContract]
   );
 
   const sendPrivateTip = useCallback(
@@ -108,19 +110,11 @@ export function useChat() {
           address
         );
 
-        await writeContract({
-          ...contractCall,
-          onSuccess: (hash) => {
-            console.log("[v0] Private tip sent:", hash);
-            toast.success(`Tip privado de ${amount} enviado`);
-          },
-          onError: (error) => {
-            console.error("[v0] Error sending private tip:", error);
-            toast.error("Error enviando tip privado");
-          },
-        });
-      } catch (error) {
-        console.error("[v0] Error in sendPrivateTip:", error);
+        const hash = await writeContract(contractCall);
+        console.log("[v0] Private tip sent:", hash);
+        toast.success(`Tip privado de ${amount} enviado`);
+      } catch (error: any) {
+        console.error("[v0] Error sending private tip:", error);
         toast.error("Error enviando tip");
       }
     },
